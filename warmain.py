@@ -4,66 +4,73 @@ import datetime
 import os
 
 class Card:
-    # """Class representing a playing card
-    SUITS = ['♥', '♦', '♣', '♠']
-    RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', 'Joker']
-    
+    # assigning the card nd its values
+    SUITS = ['♥', '♦', '♣', '♠']  # four card types
+    RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', 'Joker']  # Card values
+
     def __init__(self, rank, suit=None):
+        # initilizing a card with a value nd a type
         self.rank = rank
         self.suit = suit
-        
+
     def __str__(self):
+        # Return a string representation of the card
         if self.rank == 'Joker':
-            return f"Joker{self.suit if self.suit else '♥'}"  # Use hearts symbol for Joker if no suit specified
+            # If it's a Joker, show the suit if available, otherwise default to hearts
+            return f"Joker{self.suit if self.suit else '♥'}"
         return f"{self.rank}{self.suit}"
-    
+
     def get_value(self):
+        # Get the numeric value of the card based on its rank
         return Card.RANKS.index(self.rank)
 
 class Deck:
-    """Class representing a deck of cards"""
+    """Represents a full deck of cards, including methods to shuffle and deal cards."""
     def __init__(self):
-        self.cards = []
-        self._initialize_deck()
-        
+        self.cards = []  # List to hold all the cards in the deck
+        self._initialize_deck()  # Populate the deck with cards
+
     def _initialize_deck(self):
-        # Create standard 52 cards
+        # Create a standard deck of 52 cards plus 2 Jokers
         for suit in Card.SUITS:
-            for rank in Card.RANKS[:-1]:  # Exclude Joker
+            for rank in Card.RANKS[:-1]:  # Exclude Joker for standard cards
                 self.cards.append(Card(rank, suit))
         
-        # Add 2 Jokers with different "suits" to distinguish them
-        self.cards.append(Card('Joker', '♥'))  # Using hearts for first joker
-        self.cards.append(Card('Joker', '♠'))  # Using spades for second joker
-    
+        # Add two Jokers with different suits for distinction
+        self.cards.append(Card('Joker', '♥'))  # Joker with hearts
+        self.cards.append(Card('Joker', '♠'))  # Joker with spades
+
     def shuffle(self):
+        # Shuffle the deck to randomize the order of cards
         random.shuffle(self.cards)
-    
+
     def deal(self, num_players=2):
-        """Deal cards to players"""
+        """Distribute cards evenly among the specified number of players."""
         if num_players <= 0:
-            return []
+            return []  # No players, no cards to deal
         
+        # Create empty hands for each player
         hands = [[] for _ in range(num_players)]
         for i, card in enumerate(self.cards):
+            # Distribute cards round-robin style
             hands[i % num_players].append(card)
         
         return hands
 
 class GameHistory:
-    """Class to record and save game history"""
+    """Keeps track of the game's progress and results, and saves them to files."""
     def __init__(self):
-        self.history = []
-        self.start_time = datetime.datetime.now()
-        self.end_time = None
-        self.total_rounds = 0
-        self.human_cards = 0
-        self.pc_cards = 0
-        self.winner = None
-        self.war_count = 0
-    
+        self.history = []  # List to store details of each round
+        self.start_time = datetime.datetime.now()  # Record the start time of the game
+        self.end_time = None  # Will store the end time of the game
+        self.total_rounds = 0  # Total number of rounds played
+        self.human_cards = 0  # Final count of human player's cards
+        self.pc_cards = 0  # Final count of PC's cards
+        self.winner = None  # Overall winner of the game
+        self.war_count = 0  # Number of wars that occurred during the game
+
     def add_round_result(self, round_num, play_num, human_card, pc_card, winner, is_war=False, war_cards=None):
-        """Add a single round result to history"""
+        """Record the result of a single play in a round."""
         result = {
             'round': round_num,
             'play_num': play_num,
@@ -74,37 +81,36 @@ class GameHistory:
         }
         
         if is_war and war_cards:
+            # If a war occurred, include the war details
             result['war_cards'] = war_cards
-            self.war_count += 1
+            self.war_count += 1  # Increment the war counter
             
-        self.history.append(result)
-    
+        self.history.append(result)  # Add the result to the history
+
     def set_game_result(self, human_cards, pc_cards, winner):
-        """Set the final game result"""
-        self.end_time = datetime.datetime.now()
-        self.human_cards = human_cards
-        self.pc_cards = pc_cards
-        self.winner = winner
-    
+        """Record the final results of the game."""
+        self.end_time = datetime.datetime.now()  # Record the end time
+        self.human_cards = human_cards  # Final card count for the human player
+        self.pc_cards = pc_cards  # Final card count for the PC
+        self.winner = winner  # Overall winner of the game
+
     def save_to_file(self):
-        """Save game history to a text file with specific naming format"""
-        # Create filename with format: [date(yy-mm-dd)]_[time(hh-mm)]_[4 digit random number].txt
+        """Save the game history to both a text file and an HTML file."""
+        # Generate a unique filename based on the current date, time, and a random number
         now = datetime.datetime.now()
         random_num = random.randint(1000, 9999)
         filename = f"{now.strftime('%Y%m%d')[2:]}_{now.strftime('%H-%M')}_{random_num}"
         
-        # Save as text file
+        # Save the history in text and HTML formats
         self._save_as_text(filename + ".txt")
-        
-        # Save as HTML file (challenge activity)
         self._save_as_html(filename + ".html")
         
         return filename
-    
+
     def _save_as_text(self, filename):
-        """Save game history as text file in the required format"""
+        """Save the game history in a human-readable text format."""
         with open(filename, 'w') as file:
-            # Header with date and time
+            # Write the header with the date and time
             current_date = datetime.datetime.now().strftime('%Y-%m-%d')
             current_time = datetime.datetime.now().strftime('%H:%M')
             
@@ -112,7 +118,7 @@ class GameHistory:
             file.write(f"Time : {current_time}\n\n")
             file.write(f"Total Rounds : {self.total_rounds}\n\n")
             
-            # Group plays by round
+            # Organize plays by round
             round_plays = {}
             for play in self.history:
                 round_num = play['round']
@@ -120,7 +126,7 @@ class GameHistory:
                     round_plays[round_num] = []
                 round_plays[round_num].append(play)
             
-            # Write each round's results
+            # Write the results of each round
             for round_num in sorted(round_plays.keys()):
                 file.write(f"Round {round_num} results\n")
                 file.write("-------------------------\n")
@@ -140,7 +146,7 @@ class GameHistory:
                 
                 file.write("\n")
             
-            # Write final result
+            # Write the final game results
             file.write(f"PC card count {self.pc_cards}\n")
             file.write(f"Human card count {self.human_cards}\n")
             file.write(f"War count {self.war_count}\n\n")
@@ -149,9 +155,9 @@ class GameHistory:
                 file.write("The game ended in a tie!\n")
             else:
                 file.write(f"{self.winner} won the game!\n")
-    
+
     def _save_as_html(self, filename):
-        """Save game history as HTML file with plain text formatting like the TXT file"""
+        """Save the game history in an HTML format with plain text styling."""
         with open(filename, 'w') as file:
             file.write("""<!DOCTYPE html>
 <html lang="en">
@@ -170,7 +176,7 @@ class GameHistory:
 <body>
 """)
         
-            # Header with date and time
+            # Write the header with the date and time
             current_date = datetime.datetime.now().strftime('%Y-%m-%d')
             current_time = datetime.datetime.now().strftime('%H:%M')
         
@@ -178,7 +184,7 @@ class GameHistory:
             file.write(f"Time : {current_time}\n\n")
             file.write(f"Total Rounds : {self.total_rounds}\n\n")
         
-            # Group plays by round
+            # Organize plays by round
             round_plays = {}
             for play in self.history:
                 round_num = play['round']
@@ -186,7 +192,7 @@ class GameHistory:
                     round_plays[round_num] = []
                 round_plays[round_num].append(play)
         
-            # Write each round's results
+            # Write the results of each round
             for round_num in sorted(round_plays.keys()):
                 file.write(f"Round {round_num} results\n")
                 file.write("-------------------------\n")
@@ -206,7 +212,7 @@ class GameHistory:
             
                 file.write("\n")
         
-            # Write final result
+            # Write the final game results
             file.write(f"PC card count {self.pc_cards}\n")
             file.write(f"Human card count {self.human_cards}\n")
             file.write(f"War count {self.war_count}\n\n")
@@ -218,16 +224,6 @@ class GameHistory:
         
             file.write("""</body>
 </html>""")
-    
-    def _get_card_class(self, card_str):
-        """Get CSS class for card coloring"""
-        if "Joker" in card_str:
-            return "joker"
-        elif "♥" in card_str or "♦" in card_str:
-            return "hearts" if "♥" in card_str else "diamonds"
-        elif "♣" in card_str or "♠" in card_str:
-            return "clubs" if "♣" in card_str else "spades"
-        return ""
 
 class WarGame:
     """Class representing the War card game"""
