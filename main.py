@@ -1,5 +1,6 @@
 import sys
 import random
+import datetime
 
 def get_rounds():
     if len(sys.argv) == 1:  # No arguments → default to 1 round
@@ -73,3 +74,15 @@ def handle_war(human, pc, game_log):
             game_log.append(f"War {war_count}: {result}")
             return result
         war_count += 1  # Nested war
+
+def save_to_file(game_log, rounds, human_count, pc_count, war_count):
+    timestamp = datetime.datetime.now().strftime("%y%m%d_%H-%M")
+    random_suffix = f"{random.randint(1000, 9999)}"
+    filename = f"{timestamp}_{random_suffix}.txt"
+    with open(filename, 'w') as f:
+        f.write(f"Date: {datetime.date.today()}\n")
+        f.write(f"Time: {datetime.datetime.now().strftime('%H:%M')}\n")
+        f.write(f"Total Rounds: {rounds}\n")
+        f.write("\n".join(game_log))
+        f.write(f"\nHuman card count: {human_count}\nPC card count: {pc_count}\nWar count: {war_count}\n")
+    return filename
