@@ -44,3 +44,14 @@ class Deck:
 
     def split(self):
         return self.cards[:27], self.cards[27:]  # Split into two 27-card decks
+
+def compare_cards(card1, card2):
+    rank_order = Card.RANKS  # Joker has the highest index (13)
+    idx1 = rank_order.index(card1.rank)
+    idx2 = rank_order.index(card2.rank)
+    if idx1 > idx2:
+        return "Human"
+    elif idx1 < idx2:
+        return "PC"
+    else:
+        return "War"  # Tie → trigger a war
