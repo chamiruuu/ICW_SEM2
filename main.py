@@ -55,3 +55,21 @@ def compare_cards(card1, card2):
         return "PC"
     else:
         return "War"  # Tie → trigger a war
+    
+def handle_war(human, pc, game_log):
+    war_count = 1
+    while True:
+        # Check if both players have at least 4 cards
+        if len(human.cards) < 4 or len(pc.cards) < 4:
+            return "Insufficient cards for war."
+        # Draw 3 hidden + 1 visible card each
+        human_drawn = [human.draw_card() for _ in range(4)]
+        pc_drawn = [pc.draw_card() for _ in range(4)]
+        # Compare the 4th card
+        result = compare_cards(human_drawn[-1], pc_drawn[-1])
+        if result != "War":
+            winner = human if result == "Human" else pc
+            winner.add_cards(human_drawn + pc_drawn)  # Winner takes all
+            game_log.append(f"War {war_count}: {result}")
+            return result
+        war_count += 1  # Nested war
