@@ -86,3 +86,34 @@ def save_to_file(game_log, rounds, human_count, pc_count, war_count):
         f.write("\n".join(game_log))
         f.write(f"\nHuman card count: {human_count}\nPC card count: {pc_count}\nWar count: {war_count}\n")
     return filename
+
+class Player:
+    def __init__(self):
+        self.cards = []
+    
+    def draw_card(self):
+        return self.cards.pop(0) if self.cards else None
+
+    def add_cards(self, new_cards):
+        self.cards.extend(new_cards)
+
+def main():
+    rounds = get_rounds()
+    deck = Deck()
+    human_cards, pc_cards = deck.split()
+    human = Player()
+    pc = Player()
+    human.cards = human_cards
+    pc.cards = pc_cards
+    game_log = []
+    war_count = 0
+
+    for _ in range(rounds):
+        # Play a round (simplified for brevity)
+        # Compare cards, handle wars, update logs
+        # ...
+
+        save_to_file(game_log, rounds, len(human.cards), len(pc.cards), war_count)
+
+if __name__ == "__main__":
+    main()
