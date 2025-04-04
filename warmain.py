@@ -4,7 +4,7 @@ import datetime
 import os
 
 class Card:
-    """Class representing a playing card"""
+    # """Class representing a playing card
     SUITS = ['♥', '♦', '♣', '♠']
     RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', 'Joker']
     
@@ -151,7 +151,7 @@ class GameHistory:
                 file.write(f"{self.winner} won the game!\n")
     
     def _save_as_html(self, filename):
-    # """Save game history as HTML file with plain text formatting like the TXT file"""
+        """Save game history as HTML file with plain text formatting like the TXT file"""
         with open(filename, 'w') as file:
             file.write("""<!DOCTYPE html>
 <html lang="en">
@@ -167,55 +167,56 @@ class GameHistory:
         }
     </style>
 </head>
-<body>""")
+<body>
+""")
         
-        # Header with date and time
-        current_date = datetime.datetime.now().strftime('%Y-%m-%d')
-        current_time = datetime.datetime.now().strftime('%H:%M')
+            # Header with date and time
+            current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+            current_time = datetime.datetime.now().strftime('%H:%M')
         
-        file.write(f"Date : {current_date}\n")
-        file.write(f"Time : {current_time}\n\n")
-        file.write(f"Total Rounds : {self.total_rounds}\n\n")
+            file.write(f"Date : {current_date}\n")
+            file.write(f"Time : {current_time}\n\n")
+            file.write(f"Total Rounds : {self.total_rounds}\n\n")
         
-        # Group plays by round
-        round_plays = {}
-        for play in self.history:
-            round_num = play['round']
-            if round_num not in round_plays:
-                round_plays[round_num] = []
-            round_plays[round_num].append(play)
+            # Group plays by round
+            round_plays = {}
+            for play in self.history:
+                round_num = play['round']
+                if round_num not in round_plays:
+                    round_plays[round_num] = []
+                round_plays[round_num].append(play)
         
-        # Write each round's results
-        for round_num in sorted(round_plays.keys()):
-            file.write(f"Round {round_num} results\n")
-            file.write("-------------------------\n")
-            file.write("No : Hum vs PC - Winner\n")
+            # Write each round's results
+            for round_num in sorted(round_plays.keys()):
+                file.write(f"Round {round_num} results\n")
+                file.write("-------------------------\n")
+                file.write("No : Hum vs PC - Winner\n")
             
-            for play in round_plays[round_num]:
-                play_num = play['play_num']
-                human_card = play['human_card']
-                pc_card = play['pc_card']
+                for play in round_plays[round_num]:
+                    play_num = play['play_num']
+                    human_card = play['human_card']
+                    pc_card = play['pc_card']
                 
-                if play['is_war']:
-                    winner_text = "WAR"
-                else:
-                    winner_text = "HUMAN" if play['winner'] == "Human" else "PC"
+                    if play['is_war']:
+                        winner_text = "WAR"
+                    else:
+                        winner_text = "HUMAN" if play['winner'] == "Human" else "PC"
                 
-                file.write(f"{play_num} : {human_card} vs {pc_card} - {winner_text}\n")
+                    file.write(f"{play_num} : {human_card} vs {pc_card} - {winner_text}\n")
             
-            file.write("\n")
+                file.write("\n")
         
-        # Write final result
-        file.write(f"PC card count {self.pc_cards}\n")
-        file.write(f"Human card count {self.human_cards}\n")
-        file.write(f"War count {self.war_count}\n\n")
+            # Write final result
+            file.write(f"PC card count {self.pc_cards}\n")
+            file.write(f"Human card count {self.human_cards}\n")
+            file.write(f"War count {self.war_count}\n\n")
         
-        if self.winner == "Tie":
-            file.write("The game ended in a tie!\n")
-        else:
-            file.write(f"{self.winner} won the game!\n")
+            if self.winner == "Tie":
+                file.write("The game ended in a tie!\n")
+            else:
+                file.write(f"{self.winner} won the game!\n")
         
-        file.write("""</body>
+            file.write("""</body>
 </html>""")
     
     def _get_card_class(self, card_str):
